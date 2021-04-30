@@ -13,9 +13,13 @@
 
     <description>spring security 学习实战</description>
 
+    <!-- 依赖版本号 -->
     <properties>
-        <java.version>1.8</java.version>
-    </properties>
+        <mybatis-plus.version>3.2.0</mybatis-plus.version>
+        <druid.version>1.1.12</druid.version>
+        <kaptcha.version>2.3.2</kaptcha.version>
+        <fastjson.version>1.2.8</fastjson.version>
+   </properties>
 
     <dependencies>
         <dependency>
@@ -23,11 +27,21 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!--<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>-->
+
+        <!-- thymeleaf 模块启动器-->
         <dependency>
-            <groupId>org.springframework.security.oauth</groupId>
-            <artifactId>spring-security-oauth2</artifactId>
-            <version>2.3.4.RELEASE</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
+        <!--对Thymeleaf添加Spring Security标签支持-->
+        <!--<dependency>
+            <groupId>org.thymeleaf.extras</groupId>
+            <artifactId>thymeleaf-extras-springsecurity5</artifactId>
+        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
