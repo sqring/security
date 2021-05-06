@@ -1,4 +1,5 @@
 ## Spring Security
+#### 一、项目介绍
 Spring Security是一个功能强大且高度可定制的身份验证和访问控制框架。且专注于为Java应用程序提供身份验证和授权的框架。
 
 通过本项目可以迅速深入理解Spring Security底层的鉴权流程，以及更多的扩展鉴权方式，不仅可以提高和突破技术瓶颈，更能在项目开发中迅速集成权限框架。
@@ -12,12 +13,12 @@ Spring Security是一个功能强大且高度可定制的身份验证和访问�
 ![MySQL](https://img.shields.io/badge/MySQL-5.7.8-blueviolet.svg)
 ![Redis](https://img.shields.io/badge/Redis-3.2-yellow.svg)
 
-### 效果展示
+#### 二、效果展示
+- 首页
 
+![](./image/Home.png)
 
-### 分支说明
-#### [dev-v1.0.0](https://www.zhouwenfang.com)
-**SpringSecurity身份认证的方式**
-
-- HttpBasic 认证方式
-- HttpForm 表单认证方式
+#### 三、分支说明
+3.1 SpringSecurity身份认证的方式：dev-v1.0.0
+- [HttpBasic 认证方式](https://zhouwenfang.com/archives/security1)
+- [HttpForm 表单认证方式](https://zhouwenfang.com/archives/security1)
