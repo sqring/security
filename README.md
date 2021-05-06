@@ -12,7 +12,7 @@
 | 依赖 | 版本 |
 | :-----| :---- |
 | Spring Boot | 2.4.4	 |
-| Spring Security | 2.3.4.RELEASE |
+| Spring Security | 5.4.5 |
 
 #### 前端技术选型
 
