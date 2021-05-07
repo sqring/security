@@ -1,11 +1,18 @@
 package com.sqring.security.config;
 
+import com.sqring.security.handler.CustomAuthenticationFailureHandler;
+import com.sqring.security.handler.CustomAuthenticationSuccessHandler;
+import com.sqring.security.properties.SecurityProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -17,6 +24,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 @EnableWebSecurity //启动 SpringSecurity 过滤器链功能
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private SecurityProperties securityProperties;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Autowired
+    private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+
+    @Autowired
+    private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -35,11 +54,12 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         //用户信息存储到内存中
-        String password = passwordEncoder().encode("1234");
-        auth.inMemoryAuthentication()
-                .withUser("zwf")
-                .password(password)
-                .authorities("ADMIN");
+//        String password = passwordEncoder().encode("1234");
+//        auth.inMemoryAuthentication()
+//                .withUser("zwf")
+//                .password(password)
+//                .authorities("ADMIN");
+        auth.userDetailsService(userDetailsService);
     }
 
     /**
@@ -55,10 +75,36 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.formLogin() //httpForm表单认证
+//        http.formLogin() // 表单认证
+//                .loginPage("/login/page") // 交给 /login/page 响应认证(登录)页面
+//                .loginProcessingUrl("/login/form") // 登录表单提交处理Url, 默认是 /login
+//                .usernameParameter("name") // 默认用户名的属性名是 username
+//                .passwordParameter("pwd") // 默认密码的属性名是 password
+//                .and()
+//                .authorizeRequests() // 认证请求
+//                .antMatchers("/login/page").permitAll() // 放行跳转认证请求
+//                .anyRequest().authenticated() // 所有进入应用的HTTP请求都要进行认证
+//        .and().csrf().disable(); //关闭csrf攻击
+        http.formLogin() // 表单认证
+                .loginPage(securityProperties.getAuthentication().getLoginPage()) // 交给 /login/page 响应认证(登录)页面
+                .loginProcessingUrl(securityProperties.getAuthentication().getLoginProcessingUrl()) // 登录表单提交处理Url, 默认是 /login
+                .usernameParameter(securityProperties.getAuthentication().getUsernameParameter()) // 默认用户名的属性名是 username
+                .passwordParameter(securityProperties.getAuthentication().getPasswordParameter()) // 默认密码的属性名是 password
+                .successHandler(customAuthenticationSuccessHandler)
+                .failureHandler(customAuthenticationFailureHandler)
                 .and()
                 .authorizeRequests() // 认证请求
-                .anyRequest()
-                .authenticated(); // 所有进入应用的HTTP请求都要进行认证
+                .antMatchers(securityProperties.getAuthentication().getLoginPage()).permitAll() // 放行跳转认证请求
+                .anyRequest().authenticated() // 所有进入应用的HTTP请求都要进行认证
+                .and().csrf().disable(); //关闭csrf攻击
+    }
+
+    /**
+     * Description: 放行静态资源
+     * Params: [web]
+     */
+    @Override
+    public void configure(WebSecurity web) {
+        web.ignoring().antMatchers(securityProperties.getAuthentication().getStaticPaths());
     }
 }

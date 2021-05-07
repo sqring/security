@@ -1,3 +1,19 @@
 server:
-  port: 80
+  port: 8080
 
+spring:
+  thymeleaf:
+    cache: false #关闭thymeleaf缓存
+
+sqring:
+  security:
+    authentication:
+      loginPage: /login/page # 响应认证(登录)页面URL
+      loginProcessingUrl: /login/form # 登录表单提交处理Url
+      usernameParameter: name # 登录表单用户名的属性名
+      passwordParameter: pwd # 登录表单密码的属性名
+      staticPaths:   # 静态资源 "/dist/**", "/modules/**", "/plugins/**"
+      - /dist/**
+      - /modules/**
+      - /plugins/**
+      loginType: REDIRECT # 认证之后 响应的类型：JSON/REDIRECT

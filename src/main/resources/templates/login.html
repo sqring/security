@@ -17,7 +17,7 @@
   <!-- Theme style -->
   <link th:href="@{/dist/css/adminlte.min.css}" rel="stylesheet" href="../dist/css/adminlte.min.css">
   <!-- Google Font: Source Sans Pro -->
-  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <!--<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">-->
 </head>
 <body class="hold-transition login-page">
 <div class="login-box">
@@ -28,7 +28,7 @@
   <div class="card">
     <div class="card-body login-card-body">
       <p class="login-box-msg">请登录</p>
-      
+
       <a th:href="@{/mobile/page}" href="login-mobile.html" style="float:right;font-size: 13px;">
         <i class="fa fa-envelope mr-1"></i>使用短信验证登录
       </a>
@@ -50,15 +50,13 @@
           </div>
         </div>
 
-
-
         <div class="row mb-2 ">
           <div class="col-6">
               <input name="code" type="text" class="form-control" placeholder="验证码">
           </div>
-          <div class="col-6">
+          <!--<div class="col-6">
             <img onclick="this.src='/code/image?'+Math.random()" src="/code/image" alt="验证码"   />
-          </div>
+          </div>-->
         </div>
         <!-- 提示信息, 表达式红线没关系，忽略它 -->
         <div th:if="${param.error}">
@@ -83,7 +81,7 @@
 
       </form>
 
-<!--       
+<!--
       <div class="social-auth-links text-center mb-3">
         <p>- 或 -</p>
         <a href="#" class="btn btn-block btn-success">
