@@ -1,5 +1,7 @@
 package com.sqring.security.config;
 
+import com.sqring.security.handler.CustomAuthenticationFailureHandler;
+import com.sqring.security.handler.CustomAuthenticationSuccessHandler;
 import com.sqring.security.properties.SecurityProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,6 +30,12 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+
+    @Autowired
+    private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -82,6 +90,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginProcessingUrl(securityProperties.getAuthentication().getLoginProcessingUrl()) // 登录表单提交处理Url, 默认是 /login
                 .usernameParameter(securityProperties.getAuthentication().getUsernameParameter()) // 默认用户名的属性名是 username
                 .passwordParameter(securityProperties.getAuthentication().getPasswordParameter()) // 默认密码的属性名是 password
+                .successHandler(customAuthenticationSuccessHandler)
+                .failureHandler(customAuthenticationFailureHandler)
                 .and()
                 .authorizeRequests() // 认证请求
                 .antMatchers(securityProperties.getAuthentication().getLoginPage()).permitAll() // 放行跳转认证请求
