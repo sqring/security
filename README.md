@@ -19,6 +19,14 @@ Spring Security是一个功能强大且高度可定制的身份验证和访问�
 ![](./image/Home.png)
 
 #### 三、分支说明
-3.1 SpringSecurity身份认证的方式：dev-v1.0.0
+3.1 SpringSecurity基础框架构建和静态资源：dev-resouse
+
+3.2 SpringSecurity身份认证的方式：dev-v1.0.0
 - [HttpBasic 认证方式](https://zhouwenfang.com/archives/security1)
 - [HttpForm 表单认证方式](https://zhouwenfang.com/archives/security1)
+
+3.3 SpringSecurity身份认证的方式：dev-v1.0.1
+- 自定义登录页面
+- 登录页面表单处理
+- 动态认证用户信息
+- 自定义成功失败处理器
