@@ -1,5 +1,9 @@
 server:
-  port: 80
+  port: 8080
+
+spring:
+  thymeleaf:
+    cache: false #关闭thymeleaf缓存
 
 sqring:
   security:
@@ -12,3 +16,4 @@ sqring:
       - /dist/**
       - /modules/**
       - /plugins/**
+      loginType: REDIRECT # 认证之后 响应的类型：JSON/REDIRECT

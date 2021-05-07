@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class CustomLoginController {
 
-    @RequestMapping("login/page")
+    @RequestMapping("/login/page")
     public String toLogin(){
         return "login";
     }

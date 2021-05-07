@@ -25,7 +25,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.info("请求认证的用户名：{}", username);
-        if ("zwf".equalsIgnoreCase(username)) {
+        if (!"zwf".equalsIgnoreCase(username)) {
             throw new UsernameNotFoundException("用户名或密码错误");
         }
         // 如果有此用户信息, 假设数据库查询到的用户密码是 1234

@@ -15,4 +15,8 @@ public class AuthenticationProperties {
     private String usernameParameter = "name";
     private String passwordParameter = "pwd";
     private String[] staticPaths = {"/dist/**", "/modules/**", "/plugins/**"};
+    /**
+     * Description:登录成功后响应 JSON , 还是重定向
+     */
+    private LoginResponseType loginType = LoginResponseType.REDIRECT;
 }
