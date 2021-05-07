@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -55,10 +56,24 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.formLogin() //httpForm表单认证
+        http.formLogin() // 表单认证
+                .loginPage("/login/page") // 交给 /login/page 响应认证(登录)页面
+                .loginProcessingUrl("/login/form") // 登录表单提交处理Url, 默认是 /login
+                .usernameParameter("name") // 默认用户名的属性名是 username
+                .passwordParameter("pwd") // 默认密码的属性名是 password
                 .and()
                 .authorizeRequests() // 认证请求
-                .anyRequest()
-                .authenticated(); // 所有进入应用的HTTP请求都要进行认证
+                .antMatchers("/login/page").permitAll() // 放行跳转认证请求
+                .anyRequest().authenticated() // 所有进入应用的HTTP请求都要进行认证
+        .and().csrf().disable(); //关闭csrf攻击
+    }
+
+    /**
+     * Description: 放行静态资源
+     * Params: [web]
+     */
+    @Override
+    public void configure(WebSecurity web) {
+        web.ignoring().antMatchers("/dist/**", "/modules/**", "/plugins/**");
     }
 }
