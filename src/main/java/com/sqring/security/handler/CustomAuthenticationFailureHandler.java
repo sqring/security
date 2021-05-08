@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
+import org.thymeleaf.util.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -36,8 +37,12 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
             response.getWriter().write(result.toJsonString());
         } else {
             // 重写向回认证页面，注意加上 ?error
-            super.setDefaultFailureUrl(
-                    securityProperties.getAuthentication().getLoginPage() + "?error");
+            // super.setDefaultFailureUrl(securityProperties.getAuthentication().getLoginPage() + "?error");
+            String referer = request.getHeader("Referer");
+            logger.info("referer:" + referer);
+            String lastUrl = StringUtils.substringBefore(referer, "?");
+            logger.info("上一次请求的路径 ：" + lastUrl);
+            super.setDefaultFailureUrl(lastUrl + "?error");
             super.onAuthenticationFailure(request, response, exception);
         }
     }

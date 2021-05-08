@@ -1,8 +1,10 @@
 package com.sqring.security.config;
 
 import com.sqring.security.filter.ImageCodeValidateFilter;
+import com.sqring.security.filter.MobileValidateFilter;
 import com.sqring.security.handler.CustomAuthenticationFailureHandler;
 import com.sqring.security.handler.CustomAuthenticationSuccessHandler;
+import com.sqring.security.mobile.MobileAuthenticationConfig;
 import com.sqring.security.properties.SecurityProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -33,7 +35,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     private SecurityProperties securityProperties;
 
     @Autowired
-    private UserDetailsService userDetailsService;
+    private UserDetailsService customUserDetailsService;
 
     @Autowired
     private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
@@ -43,6 +45,13 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private ImageCodeValidateFilter imageCodeValidateFilter;
+
+    @Autowired
+    private MobileValidateFilter mobileValidateFilter;
+
+    @Autowired
+    private MobileAuthenticationConfig mobileAuthenticationConfig;
+
 
     @Autowired
     private DataSource dataSource;
@@ -72,7 +81,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService);
+        auth.userDetailsService(customUserDetailsService);
     }
 
     /**
@@ -89,6 +98,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.addFilterBefore(imageCodeValidateFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(mobileValidateFilter, UsernamePasswordAuthenticationFilter.class)
                 .formLogin() // 表单认证
                 .loginPage(securityProperties.getAuthentication().getLoginPage()) // 交给 /login/page 响应认证(登录)页面
                 .loginProcessingUrl(securityProperties.getAuthentication().getLoginProcessingUrl()) // 登录表单提交处理Url, 默认是 /login
@@ -98,10 +108,14 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .failureHandler(customAuthenticationFailureHandler)
                 .and()
                 .authorizeRequests() // 认证请求
-                .antMatchers(securityProperties.getAuthentication().getLoginPage(), "/code/image").permitAll() // 放行跳转认证请求
+                .antMatchers(securityProperties.getAuthentication().getLoginPage()
+                        , "/code/image", "/mobile/page", "/code/mobile").permitAll() // 放行跳转认证请求
                 .anyRequest().authenticated() // 所有进入应用的HTTP请求都要进行认证
-                .and().rememberMe().tokenRepository(jdbcTokenRepository()).tokenValiditySeconds(60*60*24*7)
-                .and().csrf().disable(); //关闭csrf攻击
+                .and().rememberMe().tokenRepository(jdbcTokenRepository())
+                .tokenValiditySeconds(60*60*24*7);
+        //关闭csrf攻击
+        http.csrf().disable();
+        http.apply(mobileAuthenticationConfig);
     }
 
     /**
