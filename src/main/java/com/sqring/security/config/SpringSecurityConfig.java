@@ -1,5 +1,6 @@
 package com.sqring.security.config;
 
+import com.sqring.security.filter.ImageCodeValidateFilter;
 import com.sqring.security.handler.CustomAuthenticationFailureHandler;
 import com.sqring.security.handler.CustomAuthenticationSuccessHandler;
 import com.sqring.security.properties.SecurityProperties;
@@ -15,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * descriptions: 安全控制中心
@@ -37,6 +39,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
+    @Autowired
+    private ImageCodeValidateFilter imageCodeValidateFilter;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         // 设置默认的加密方式
@@ -53,12 +58,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        //用户信息存储到内存中
-//        String password = passwordEncoder().encode("1234");
-//        auth.inMemoryAuthentication()
-//                .withUser("zwf")
-//                .password(password)
-//                .authorities("ADMIN");
         auth.userDetailsService(userDetailsService);
     }
 
@@ -75,17 +74,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-//        http.formLogin() // 表单认证
-//                .loginPage("/login/page") // 交给 /login/page 响应认证(登录)页面
-//                .loginProcessingUrl("/login/form") // 登录表单提交处理Url, 默认是 /login
-//                .usernameParameter("name") // 默认用户名的属性名是 username
-//                .passwordParameter("pwd") // 默认密码的属性名是 password
-//                .and()
-//                .authorizeRequests() // 认证请求
-//                .antMatchers("/login/page").permitAll() // 放行跳转认证请求
-//                .anyRequest().authenticated() // 所有进入应用的HTTP请求都要进行认证
-//        .and().csrf().disable(); //关闭csrf攻击
-        http.formLogin() // 表单认证
+        http.addFilterBefore(imageCodeValidateFilter, UsernamePasswordAuthenticationFilter.class)
+                .formLogin() // 表单认证
                 .loginPage(securityProperties.getAuthentication().getLoginPage()) // 交给 /login/page 响应认证(登录)页面
                 .loginProcessingUrl(securityProperties.getAuthentication().getLoginProcessingUrl()) // 登录表单提交处理Url, 默认是 /login
                 .usernameParameter(securityProperties.getAuthentication().getUsernameParameter()) // 默认用户名的属性名是 username
@@ -94,7 +84,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .failureHandler(customAuthenticationFailureHandler)
                 .and()
                 .authorizeRequests() // 认证请求
-                .antMatchers(securityProperties.getAuthentication().getLoginPage()).permitAll() // 放行跳转认证请求
+                .antMatchers(securityProperties.getAuthentication().getLoginPage(), "/code/image").permitAll() // 放行跳转认证请求
                 .anyRequest().authenticated() // 所有进入应用的HTTP请求都要进行认证
                 .and().csrf().disable(); //关闭csrf攻击
     }
