@@ -108,8 +108,11 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .failureHandler(customAuthenticationFailureHandler)
                 .and()
                 .authorizeRequests() // 认证请求
-                .antMatchers(securityProperties.getAuthentication().getLoginPage()
-                        , "/code/image", "/mobile/page", "/code/mobile").permitAll() // 放行跳转认证请求
+                .antMatchers(securityProperties.getAuthentication().getLoginPage(),
+                        securityProperties.getAuthentication().getImageCodeUrl(),
+                        securityProperties.getAuthentication().getMobilePage(),
+                        securityProperties.getAuthentication().getMobileCodeUrl()
+                        ).permitAll() // 放行跳转认证请求
                 .anyRequest().authenticated() // 所有进入应用的HTTP请求都要进行认证
                 .and().rememberMe().tokenRepository(jdbcTokenRepository())
                 .tokenValiditySeconds(60*60*24*7);

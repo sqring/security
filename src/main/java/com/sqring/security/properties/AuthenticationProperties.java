@@ -19,4 +19,12 @@ public class AuthenticationProperties {
      * Description:登录成功后响应 JSON , 还是重定向
      */
     private LoginResponseType loginType = LoginResponseType.REDIRECT;
+
+    private String imageCodeUrl = "/code/image";
+    private String mobileCodeUrl = "/code/mobile";
+    private String mobilePage = "/mobile/page";
+    private Integer tokenValiditySeconds = 60*60*24*7;
+
+
+
 }

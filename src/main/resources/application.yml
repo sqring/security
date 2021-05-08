@@ -26,3 +26,7 @@ sqring:
       - /modules/**
       - /plugins/**
       loginType: REDIRECT # 认证之后 响应的类型：JSON/REDIRECT
+      imageCodeUrl: /code/image # 获取图形验证码 url
+      mobileCodeUrl: /code/mobile # 发送手机验证码 url
+      mobilePage: /mobile/page # 前往手机登录页面地址
+      tokenValiditySeconds: 604800 # 记住我有效时长，单位秒， 注意不要用乘法*，会被认为字符串
