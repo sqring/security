@@ -5,7 +5,6 @@ import com.sqring.security.handler.CustomAuthenticationFailureHandler;
 import com.sqring.security.handler.CustomAuthenticationSuccessHandler;
 import com.sqring.security.properties.SecurityProperties;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -17,6 +16,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+
+import javax.sql.DataSource;
 
 /**
  * descriptions: 安全控制中心
@@ -41,6 +43,18 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private ImageCodeValidateFilter imageCodeValidateFilter;
+
+    @Autowired
+    private DataSource dataSource;
+
+    @Bean
+    public JdbcTokenRepositoryImpl jdbcTokenRepository() {
+        JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
+        jdbcTokenRepository.setDataSource(dataSource);
+        // 是否启动时自动创建表，第一次启动创建就行，后面启动把这个注释掉,不然报错已存在表
+        // jdbcTokenRepository.setCreateTableOnStartup(true);
+        return jdbcTokenRepository;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -86,6 +100,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests() // 认证请求
                 .antMatchers(securityProperties.getAuthentication().getLoginPage(), "/code/image").permitAll() // 放行跳转认证请求
                 .anyRequest().authenticated() // 所有进入应用的HTTP请求都要进行认证
+                .and().rememberMe().tokenRepository(jdbcTokenRepository()).tokenValiditySeconds(60*60*24*7)
                 .and().csrf().disable(); //关闭csrf攻击
     }
 
