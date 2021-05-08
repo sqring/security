@@ -8,14 +8,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 /**
  * descriptions:
  * author: Mr.zhou
  * date: 2021/5/7
  */
-@Service
+@Component("customUserDetailsService")
 @Slf4j
 public class CustomUserDetailsService implements UserDetailsService {
 

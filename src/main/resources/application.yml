@@ -1,10 +1,30 @@
 server:
   port: 8080
-
+  servlet:
+    session:
+      timeout: 10m # session超时时间默认30m (30分钟)，至少设置1分钟
+      cookie:
+        name: JSESSIONID # 统一指定浏览器中 Cookie 保存的SessionID名称
 spring:
   thymeleaf:
     cache: false #关闭thymeleaf缓存
 
+  # session 高可用
+  session:
+    store-type: redis
+  # 缓存配置
+  redis:
+    port: 6379
+    host: 127.0.0.1
+  # 数据源配置
+  datasource:
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/security?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8
+
+
+# 动态配置
 sqring:
   security:
     authentication:
@@ -17,3 +37,7 @@ sqring:
       - /modules/**
       - /plugins/**
       loginType: REDIRECT # 认证之后 响应的类型：JSON/REDIRECT
+      imageCodeUrl: /code/image # 获取图形验证码 url
+      mobileCodeUrl: /code/mobile # 发送手机验证码 url
+      mobilePage: /mobile/page # 前往手机登录页面地址
+      tokenValiditySeconds: 604800 # 记住我有效时长，单位秒， 注意不要用乘法*，会被认为字符串
