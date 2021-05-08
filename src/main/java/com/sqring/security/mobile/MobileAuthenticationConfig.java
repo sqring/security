@@ -43,7 +43,8 @@ public class MobileAuthenticationConfig
         // 采用哪个成功、失败处理器
         mobileAuthenticationFilter.setAuthenticationSuccessHandler(
                 customAuthenticationSuccessHandler);
-
+        // 指定记住我功能
+        mobileAuthenticationFilter.setRememberMeServices(http.getSharedObject(RememberMeServices.class));
 
         mobileAuthenticationFilter.setAuthenticationFailureHandler(
                 customAuthenticationFailureHandler);
