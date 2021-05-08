@@ -4,6 +4,7 @@ import com.sqring.security.filter.ImageCodeValidateFilter;
 import com.sqring.security.filter.MobileValidateFilter;
 import com.sqring.security.handler.CustomAuthenticationFailureHandler;
 import com.sqring.security.handler.CustomAuthenticationSuccessHandler;
+import com.sqring.security.handler.CustomLogoutHandler;
 import com.sqring.security.mobile.MobileAuthenticationConfig;
 import com.sqring.security.properties.SecurityProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +15,15 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.session.InvalidSessionStrategy;
+import org.springframework.security.web.session.SessionInformationExpiredStrategy;
 
 import javax.sql.DataSource;
 
@@ -52,6 +57,11 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private MobileAuthenticationConfig mobileAuthenticationConfig;
 
+    @Autowired
+    private InvalidSessionStrategy invalidSessionStrategy;
+
+    @Autowired
+    private SessionInformationExpiredStrategy sessionInformationExpiredStrategy;
 
     @Autowired
     private DataSource dataSource;
@@ -69,6 +79,11 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     public PasswordEncoder passwordEncoder() {
         // 设置默认的加密方式
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
     }
 
     /**
@@ -114,8 +129,17 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                         securityProperties.getAuthentication().getMobileCodeUrl()
                         ).permitAll() // 放行跳转认证请求
                 .anyRequest().authenticated() // 所有进入应用的HTTP请求都要进行认证
-                .and().rememberMe().tokenRepository(jdbcTokenRepository())
-                .tokenValiditySeconds(60*60*24*7);
+                .and()
+                .rememberMe().tokenRepository(jdbcTokenRepository()).tokenValiditySeconds(60*60*24*7)
+                .and() //配置session管理
+                .sessionManagement()
+                .invalidSessionStrategy(invalidSessionStrategy)
+                .maximumSessions(50)
+                .expiredSessionStrategy(sessionInformationExpiredStrategy)
+                // .maxSessionsPreventsLogin(true)
+                .and()
+                .and().logout().addLogoutHandler(new CustomLogoutHandler());
+
         //关闭csrf攻击
         http.csrf().disable();
         http.apply(mobileAuthenticationConfig);

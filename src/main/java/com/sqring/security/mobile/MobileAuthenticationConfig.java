@@ -34,26 +34,29 @@ public class MobileAuthenticationConfig
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        // 创建校验手机号过滤器实例
-        MobileAuthenticationFilter mobileAuthenticationFilter
-                = new MobileAuthenticationFilter();
-        // 接收 AuthenticationManager 认证管理器
+        MobileAuthenticationFilter mobileAuthenticationFilter = new MobileAuthenticationFilter();
+        // 获取容器中已经存在的AuthenticationManager对象，并传入 mobileAuthenticationFilter 里面
         mobileAuthenticationFilter.setAuthenticationManager(
                 http.getSharedObject(AuthenticationManager.class));
-        // 采用哪个成功、失败处理器
-        mobileAuthenticationFilter.setAuthenticationSuccessHandler(
-                customAuthenticationSuccessHandler);
+
         // 指定记住我功能
         mobileAuthenticationFilter.setRememberMeServices(http.getSharedObject(RememberMeServices.class));
 
-        mobileAuthenticationFilter.setAuthenticationFailureHandler(
-                customAuthenticationFailureHandler);
-        // 为 Provider 指定明确 的mobileUserDetailsService 来查询用户信息
+        // session重复登录 管理
+        mobileAuthenticationFilter.setSessionAuthenticationStrategy(
+                http.getSharedObject(SessionAuthenticationStrategy.class));
+
+        // 传入 失败与成功处理器
+        mobileAuthenticationFilter.setAuthenticationSuccessHandler(customAuthenticationSuccessHandler);
+        mobileAuthenticationFilter.setAuthenticationFailureHandler(customAuthenticationFailureHandler);
+
+        // 构建一个MobileAuthenticationProvider实例，接收 mobileUserDetailsService 通过手机号查询用户信息
         MobileAuthenticationProvider provider = new MobileAuthenticationProvider();
         provider.setUserDetailsService(mobileUserDetailsService);
-        // 将 provider 绑定到 HttpSecurity 上面，
-        // 并且将 手机认证加到 用户名密码认证之后
+
+        // 将provider绑定到 HttpSecurity上，并将 手机号认证过滤器绑定到用户名密码认证过滤器之后
         http.authenticationProvider(provider)
                 .addFilterAfter(mobileAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
     }
 }
