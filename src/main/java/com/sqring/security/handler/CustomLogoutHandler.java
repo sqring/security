@@ -1,6 +1,7 @@
 package com.sqring.security.handler;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 public class CustomLogoutHandler implements LogoutHandler {
 
     @Autowired
+    @Lazy //解决bean的循环注入
     private SessionRegistry sessionRegistry;
 
     @Override
