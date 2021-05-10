@@ -66,6 +66,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private DataSource dataSource;
 
+    @Autowired
+    private CustomLogoutHandler customLogoutHandler;
+
     @Bean
     public JdbcTokenRepositoryImpl jdbcTokenRepository() {
         JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
@@ -136,9 +139,14 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .invalidSessionStrategy(invalidSessionStrategy)
                 .maximumSessions(50)
                 .expiredSessionStrategy(sessionInformationExpiredStrategy)
-                // .maxSessionsPreventsLogin(true)
-                .and()
-                .and().logout().addLogoutHandler(new CustomLogoutHandler());
+                .maxSessionsPreventsLogin(true) //超过最大登陆数禁止登陆
+                .sessionRegistry(sessionRegistry())
+                .and().and()
+                .logout()
+                .addLogoutHandler(customLogoutHandler) // 退出清除缓存
+                .logoutUrl("/user/logout") //退出系统URL
+                .logoutSuccessUrl("/mobile/page") //退出成功后请求 /mobile/page 回到手机登录页
+                .deleteCookies("JSESSIONID"); // 删除特定的Cookie值
 
         //关闭csrf攻击
         http.csrf().disable();
