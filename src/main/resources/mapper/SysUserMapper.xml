@@ -1,0 +1,46 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sqring.security.mapper.SysUserMapper">
+
+    <select id="selectPage" resultType="SysUser">
+        SELECT
+            `id`,
+            `username`,
+            `password`,
+            `is_account_non_expired`,
+            `is_account_non_locked`,
+            `is_credentials_non_expired`,
+            `is_enabled`,
+            `nick_name`,
+            `mobile`,
+            `email`,
+            `create_date`,
+            `update_date`
+        FROM
+            sys_user
+        WHERE `is_enabled` = 1
+        <if test="u.username != null and u.username !=''">
+            AND username LIKE CONCAT('%', #{u.username}, '%')
+        </if>
+
+        <if test="u.mobile != null and u.mobile !=''">
+            AND mobile = ${u.mobile}
+        </if>
+    </select>
+
+
+    <!--通过用户id删除用户角色关系表数据-->
+    <delete id="deleteUserRoleByUserId">
+      DELETE FROM sys_user_role where user_id = #{userId}
+    </delete>
+
+    <insert id="saveUserRole">
+        INSERT INTO sys_user_role(user_id, role_id) VALUES
+        <foreach collection="roleIds" item="item" index="index" separator=",">
+            (#{userId}, #{item})
+        </foreach>
+    </insert>
+
+</mapper>

@@ -1,6 +1,8 @@
 package com.sqring.security.service;
 
+import com.sqring.security.entities.SysUser;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,15 +17,15 @@ import org.springframework.stereotype.Component;
  */
 @Component("mobileUserDetailsService")
 @Slf4j
-public class MobileUserDetailsService implements UserDetailsService {
+public class MobileUserDetailsService extends AbstractUserDetailsService {
+
+    @Autowired
+    SysUserService sysUserService;
+
     @Override
-    public UserDetails loadUserByUsername(String mobile) throws UsernameNotFoundException {
-        log.info("请求的手机号是：" + mobile);
+    public SysUser findSysUser(String usernameOrMobile) {
+        log.info("请求的手机号是：" + usernameOrMobile);
         // 1. 通过手机号查询用户信息
-        // 2. 如果有此用户，则查询用户权限
-        // 3. 封装用户信息
-        return new User(mobile, "",
-                true, true, true, true,
-                AuthorityUtils.commaSeparatedStringToAuthorityList("ADMIN"));
+        return sysUserService.findByMobile(usernameOrMobile);
     }
 }

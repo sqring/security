@@ -1,5 +1,6 @@
 package com.sqring.security.config;
 
+import com.sqring.security.authorize.AuthorizeConfigurerManager;
 import com.sqring.security.filter.ImageCodeValidateFilter;
 import com.sqring.security.filter.MobileValidateFilter;
 import com.sqring.security.handler.CustomAuthenticationFailureHandler;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -34,6 +36,7 @@ import javax.sql.DataSource;
  */
 @Configuration
 @EnableWebSecurity //启动 SpringSecurity 过滤器链功能
+@EnableGlobalMethodSecurity(prePostEnabled = true) // 开启注解方法级别权限控制
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -69,6 +72,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private CustomLogoutHandler customLogoutHandler;
 
+    @Autowired
+    private AuthorizeConfigurerManager authorizeConfigurerManager;
+
     @Bean
     public JdbcTokenRepositoryImpl jdbcTokenRepository() {
         JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
@@ -103,54 +109,68 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     /**
-     * 资源权限配置（过滤器链）:
-     * 1、被拦截的资源
-     * 2、资源所对应的角色权限
-     * 3、定义认证方式：httpBasic 、httpForm
-     * 4、定制登录页面、登录请求地址、错误处理方式
-     * 5、自定义 spring security 过滤器
-     *
+     * 当你认证成功之后 ，springsecurity它会重写向到你上一次请求上
+     * 资源权限配置：
+     * 1. 被拦截的资源
      * @param http
      * @throws Exception
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.addFilterBefore(imageCodeValidateFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(mobileValidateFilter, UsernamePasswordAuthenticationFilter.class)
-                .formLogin() // 表单认证
-                .loginPage(securityProperties.getAuthentication().getLoginPage()) // 交给 /login/page 响应认证(登录)页面
-                .loginProcessingUrl(securityProperties.getAuthentication().getLoginProcessingUrl()) // 登录表单提交处理Url, 默认是 /login
-                .usernameParameter(securityProperties.getAuthentication().getUsernameParameter()) // 默认用户名的属性名是 username
-                .passwordParameter(securityProperties.getAuthentication().getPasswordParameter()) // 默认密码的属性名是 password
+//        http.httpBasic() // 采用 httpBasic认证方式
+        // 校验手机验证码过滤器
+        http.addFilterBefore(mobileValidateFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(imageCodeValidateFilter, UsernamePasswordAuthenticationFilter.class)
+                .formLogin() // 表单登录方式
+                .loginPage(securityProperties.getAuthentication().getLoginPage())
+                .loginProcessingUrl(securityProperties.getAuthentication().getLoginProcessingUrl()) // 登录表单提交处理url, 默认是/login
+                .usernameParameter(securityProperties.getAuthentication().getUsernameParameter()) //默认的是 username
+                .passwordParameter(securityProperties.getAuthentication().getPasswordParameter())  // 默认的是 password
                 .successHandler(customAuthenticationSuccessHandler)
                 .failureHandler(customAuthenticationFailureHandler)
+//                .and()
+//                    .authorizeRequests() // 授权请求
+//                    .antMatchers(securityProperties.getAuthentication().getLoginPage(),
+////                    "/code/image","/mobile/page", "/code/mobile"
+//                            securityProperties.getAuthentication().getImageCodeUrl(),
+//                            securityProperties.getAuthentication().getMobilePage(),
+//                            securityProperties.getAuthentication().getMobileCodeUrl()
+//                    ).permitAll() // 放行/login/page不需要认证可访问
+//
+//                    // 有 sys:user 权限的可以访问任意请求方式的/role
+//                    .antMatchers("/user").hasAuthority("sys:user")
+//                    // 有 sys:role 权限的可以访问 get方式的/role
+//                    .antMatchers(HttpMethod.GET,"/role").hasAuthority("sys:role")
+//                    .antMatchers(HttpMethod.GET, "/permission")
+//                    // ADMIN 注意角色会在前面加上前缀 ROLE_ , 也就是完整的是 ROLE_ADMIN, ROLE_ROOT
+//                    .access("hasAuthority('sys:premission') or hasAnyRole('ADMIN', 'ROOT')")
+//
+//                    .anyRequest().authenticated() //所有访问该应用的http请求都要通过身份认证才可以访问
                 .and()
-                .authorizeRequests() // 认证请求
-                .antMatchers(securityProperties.getAuthentication().getLoginPage(),
-                        securityProperties.getAuthentication().getImageCodeUrl(),
-                        securityProperties.getAuthentication().getMobilePage(),
-                        securityProperties.getAuthentication().getMobileCodeUrl()
-                        ).permitAll() // 放行跳转认证请求
-                .anyRequest().authenticated() // 所有进入应用的HTTP请求都要进行认证
+                .rememberMe() // 记住功能配置
+                .tokenRepository(jdbcTokenRepository()) //保存登录信息
+                .tokenValiditySeconds(securityProperties.getAuthentication().getTokenValiditySeconds()) //记住我有效时长
                 .and()
-                .rememberMe().tokenRepository(jdbcTokenRepository()).tokenValiditySeconds(60*60*24*7)
-                .and() //配置session管理
-                .sessionManagement()
-                .invalidSessionStrategy(invalidSessionStrategy)
-                .maximumSessions(50)
-                .expiredSessionStrategy(sessionInformationExpiredStrategy)
-                .maxSessionsPreventsLogin(true) //超过最大登陆数禁止登陆
+                .sessionManagement()// session管理
+                .invalidSessionStrategy(invalidSessionStrategy) //当session失效后的处理类
+                .maximumSessions(1) // 每个用户在系统中最多可以有多少个session
+                .expiredSessionStrategy(sessionInformationExpiredStrategy)// 当用户达到最大session数后，则调用此处的实现
+                .maxSessionsPreventsLogin(true) // 当一个用户达到最大session数,则不允许后面再登录
                 .sessionRegistry(sessionRegistry())
                 .and().and()
                 .logout()
                 .addLogoutHandler(customLogoutHandler) // 退出清除缓存
-                .logoutUrl("/user/logout") //退出系统URL
-                .logoutSuccessUrl("/mobile/page") //退出成功后请求 /mobile/page 回到手机登录页
-                .deleteCookies("JSESSIONID"); // 删除特定的Cookie值
+                .logoutUrl("/user/logout") // 退出请求路径
+                .logoutSuccessUrl("/mobile/page") //退出成功后跳转地址
+                .deleteCookies("JSESSIONID") // 退出后删除什么cookie值
+        ;// 注意不要少了分号
 
-        //关闭csrf攻击
-        http.csrf().disable();
+        http.csrf().disable(); // 关闭跨站请求伪造
+        //将手机认证添加到过滤器链上
         http.apply(mobileAuthenticationConfig);
+
+        // 将所有的授权配置统一的起来
+        authorizeConfigurerManager.configure(http.authorizeRequests());
     }
 
     /**

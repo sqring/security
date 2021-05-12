@@ -1,0 +1,46 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sqring.security.mapper.SysRoleMapper">
+
+    <select id="selectPage" resultType="SysRole">
+        SELECT
+            `id`,
+            `name`,
+            `remark`,
+            `create_date`,
+            `update_date`
+        FROM
+            sys_role
+        WHERE 1=1
+          <if test="p.name != null and p.name !=''">
+             and `name` LIKE CONCAT('%', #{p.name}, '%')
+          </if>
+    </select>
+
+    <!--通过角色id删除角色权限关系 表数据-->
+    <delete id="deleteRolePermissionByRoleId">
+      DELETE FROM sys_role_permission where role_id = #{roleId}
+    </delete>
+
+    <insert id="saveRolePermission">
+        INSERT INTO sys_role_permission(role_id, permission_id) VALUES
+        <foreach collection="perIds" item="item" index="index" separator=",">
+            (#{roleId}, #{item})
+        </foreach>
+    </insert>
+
+
+    <select id="findByUserId" resultType="SysRole">
+        SELECT
+            r.*
+        FROM
+            sys_role r
+        JOIN sys_user_role ur ON r.id = ur.role_id
+        JOIN sys_user u ON ur.user_id = u.id
+        WHERE
+            u.id = #{userId}
+    </select>
+
+</mapper>

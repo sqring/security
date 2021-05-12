@@ -41,9 +41,9 @@
         <div class="row">
           <div class="col-md-12">
             <!-- form start -->
-            <form th:action="@{/user}" th:method="post" >
-              <input name="id" type="hidden" id="id" >
-              <input  name="_method" value="put" type="hidden" >
+            <form th:action="@{/user}" th:method="post" th:object="${user}">
+              <input th:value="*{id}" name="id" type="hidden" id="id" >
+              <input th:if="*{id!=null}"  name="_method" value="put" type="hidden" >
 
               <!-- general form elements -->
               <div class="card card-primary">
@@ -52,99 +52,99 @@
                   </h3>
                 </div>
                 <!-- /.card-header -->
-                  <div class="card-body ml-4">
-                    <div class="row">
-                      <div class="col-sm-6">
-                        <div class="form-inline form-group ">
-                          <label class="col-sm-3" ><span style="color: red; ">*</span>用户名：</label>
-                          <div class="col-sm-9">
-                            <input  type="text" name="username" class="form-control col-15" placeholder="请输入用户名" required>
-                          </div>
+                <div class="card-body ml-4">
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <div class="form-inline form-group ">
+                        <label class="col-sm-3" ><span style="color: red; ">*</span>用户名：</label>
+                        <div class="col-sm-9">
+                          <input th:value="*{username}" type="text" name="username" class="form-control col-15" placeholder="请输入用户名" required>
                         </div>
                       </div>
-                      <div class="col-sm-6">
-                        <div class="form-inline form-group">
-                          <label class="col-sm-3" ><span style="color: red; ">*</span>昵称：</label>
-                          <div class="col-sm-9">
-                            <input  type="text" name="nickName" class="form-control" placeholder="请输入昵称" required>
+                    </div>
+                    <div class="col-sm-6">
+                      <div class="form-inline form-group">
+                        <label class="col-sm-3" ><span style="color: red; ">*</span>昵称：</label>
+                        <div class="col-sm-9">
+                          <input th:value="*{nickName}" type="text" name="nickName" class="form-control" placeholder="请输入昵称" required>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <div class="form-inline form-group">
+                        <label class="col-sm-3" ><span style="color: red; ">*</span>手机号：</label>
+                        <div class="col-sm-9">
+                          <input th:value="*{mobile}"   type="text" name="mobile" class="form-control" placeholder="请输入手机号" required>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <div class="form-inline form-group">
+                        <label class="col-sm-3" ><span style="color: red; ">*</span>邮箱：</label>
+                        <div class="col-sm-9">
+                          <input th:value="*{email}"  type="text" name="email" class="form-control" data-inputmask="'alias': 'email'" data-mask placeholder="请输入邮箱" required>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <!-- radio -->
+                      <div class="form-inline form-group">
+                        <label class="col-sm-3" >帐号过期：</label>
+                        <div class="col-sm-9 form-inline">
+                          <div class="form-check">
+                            <input th:field="*{accountNonExpired}"  value="1" type="radio" name="accountNonExpired"  class="form-check-input " checked>
+                            <label class="form-check-label ">正常&nbsp;</label>
+                          </div>
+                          <div class="form-check">
+                            <input th:field="*{accountNonExpired}"  value="0" type="radio" name="accountNonExpired" class="form-check-input" >
+                            <label class="form-check-label">过期</label>
                           </div>
                         </div>
                       </div>
                     </div>
-
-                    <div class="row">
-                      <div class="col-sm-6">
-                        <div class="form-inline form-group">
-                          <label class="col-sm-3" ><span style="color: red; ">*</span>手机号：</label>
-                          <div class="col-sm-9">
-                            <input   type="text" name="mobile" class="form-control" placeholder="请输入手机号" required>
+                    <div class="col-sm-6">
+                      <!-- radio -->
+                      <div class="form-inline form-group">
+                        <label class="col-sm-3" >密码过期：</label>
+                        <div class="col-sm-9 form-inline">
+                          <div class="form-check">
+                            <input th:field="*{credentialsNonExpired}" value="1" name="credentialsNonExpired" type="radio"  class="form-check-input "  checked>
+                            <label class="form-check-label ">正常&nbsp;</label>
                           </div>
-                        </div>
-                      </div>
-                      <div class="col-sm-6">
-                        <div class="form-inline form-group">
-                          <label class="col-sm-3" ><span style="color: red; ">*</span>邮箱：</label>
-                          <div class="col-sm-9">
-                            <input  type="text" name="email" class="form-control" data-inputmask="'alias': 'email'" data-mask placeholder="请输入邮箱" required>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="row">
-                      <div class="col-sm-6">
-                        <!-- radio -->
-                        <div class="form-inline form-group">
-                          <label class="col-sm-3" >帐号过期：</label>
-                          <div class="col-sm-9 form-inline">
-                            <div class="form-check">
-                              <input  value="1" type="radio" name="accountNonExpired"  class="form-check-input " checked>
-                              <label class="form-check-label ">正常&nbsp;</label>
-                            </div>
-                            <div class="form-check">
-                              <input  value="0" type="radio" name="accountNonExpired" class="form-check-input" >
-                              <label class="form-check-label">过期</label>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-sm-6">
-                        <!-- radio -->
-                        <div class="form-inline form-group">
-                          <label class="col-sm-3" >密码过期：</label>
-                          <div class="col-sm-9 form-inline">
-                            <div class="form-check">
-                              <input  value="1" name="credentialsNonExpired" type="radio"  class="form-check-input "  checked>
-                              <label class="form-check-label ">正常&nbsp;</label>
-                            </div>
-                            <div class="form-check">
-                              <input  value="0" name="credentialsNonExpired" class="form-check-input"  type="radio">
-                              <label class="form-check-label">过期</label>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="row">
-                      <div class="col-sm-6">
-                        <!-- radio -->
-                        <div class="form-inline form-group">
-                          <label class="col-sm-3" >是否锁定：</label>
-                          <div class="col-sm-9 form-inline">
-                            <div class="form-check">
-                              <input  name="accountNonLocked" value="1" class="form-check-input" type="radio" checked>
-                              <label class="form-check-label ">正常&nbsp;</label>
-                            </div>
-                            <div class="form-check">
-                              <input  name="accountNonLocked" value="0" class="form-check-input" type="radio"  >
-                              <label class="form-check-label">锁定</label>
-                            </div>
+                          <div class="form-check">
+                            <input th:field="*{credentialsNonExpired}"  value="0" name="credentialsNonExpired" class="form-check-input"  type="radio">
+                            <label class="form-check-label">过期</label>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
+
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <!-- radio -->
+                      <div class="form-inline form-group">
+                        <label class="col-sm-3" >是否锁定：</label>
+                        <div class="col-sm-9 form-inline">
+                          <div class="form-check">
+                            <input th:field="*{accountNonLocked}"  name="accountNonLocked" value="1" class="form-check-input" type="radio" checked>
+                            <label class="form-check-label ">正常&nbsp;</label>
+                          </div>
+                          <div class="form-check">
+                            <input th:field="*{accountNonLocked}"  name="accountNonLocked" value="0" class="form-check-input" type="radio"  >
+                            <label class="form-check-label">锁定</label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <!--  角色-->
@@ -153,10 +153,27 @@
                   <h3 class="card-title">拥有角色</h3>
                 </div>
                 <div class="card-body form-inline">
-                  <div  class="custom-control custom-checkbox ml-5">
-                    <input name="roleIds" value="1" id="role1"  checked class="custom-control-input" type="checkbox" >
-                    <label for="role1" class="custom-control-label">系统管理员</label>
+                  <!--th:each="role : ${roleList}" 获取 model.addAttribute("roleList", roleList); 中的 roleList所有的角色集合,
+                    再进行循环 ,每一个元素对应的就是 role 标识
+                  -->
+                  <div th:each="role : ${roleList}" class="custom-control custom-checkbox ml-5">
+                    <!--
+                    th:value="${role.id}" 将所有角色中的每一个角色id放到input上,即选择框
+                    th:id="role + ${role.id}" 作用:为了互斥,不然的话点击之后 ,只会选择第一个
+                        他要跟 th:for="role + ${role.id}" 的要一致
+
+                    th:checked="${user.roleIds.contains(role.id)}" 如果th:checked值为true则选中, 它的作用是用来回显当前用户的角色
+                     ${user.roleIds.contains(role.id)} user.roleIds获取当前用户的所拥有的权限id,
+                            ${user.roleIds.contains(role.id)} 判断 下每个角色是否包含在当前这个用户角色里,如果包含则返回true会被选择,返回false不会被选择
+                    -->
+                    <input th:checked="${user.roleIds.contains(role.id)}" name="roleIds" th:value="${role.id}" th:id="role + ${role.id}" id="role1"   class="custom-control-input" type="checkbox" >
+                    <!--
+                    th:text="${role.name}" 将每个角色名称放到标签体内
+                    th:for="role + ${role.id}" 这要与上面input中的id一致即可
+                    -->
+                    <label th:for="role + ${role.id}" for="role1" th:text="${role.name}" class="custom-control-label">系统管理员</label>
                   </div>
+
                 </div>
                 <!-- /.card-body -->
               </div>
@@ -172,7 +189,7 @@
                     </button>
                   </div>
                 </div>
-            </div>
+              </div>
             </form>
             <!-- /.form -->
           </div>
