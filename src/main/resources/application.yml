@@ -22,7 +22,27 @@ spring:
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3306/security?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8
+    #   数据源其他配置, 在 DruidConfig配置类中手动绑定
+    initialSize: 8
+    minIdle: 5
+    maxActive: 20
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true # springboot2.2版本后,要手动开启对delete和put方法的处理
 
+mybatis-plus:
+  # 指定实体类所有包
+  type-aliases-package: com.sqring.security.entities
+
+# 日志级别，会打印sql语句
+logging:
+  level:
+    com.sqring.security.mapper: debug
 
 # 动态配置
 sqring:

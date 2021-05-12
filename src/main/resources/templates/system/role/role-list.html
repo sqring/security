@@ -69,9 +69,10 @@
           <hr>
           <!-- 列表 -->
           <table id="table" class="table table-bordered">
+
           </table>
         </div>
-      <!-- /.card -->
+        <!-- /.card -->
       </div>
     </section>
     <!-- / 右侧内容区域 -->
@@ -92,6 +93,44 @@
 <th:block th:replace="fragments/script :: public-js"/>
 <th:block th:replace="fragments/script :: bootstrap-table-js"/>
 <th:block th:replace="fragments/script :: layer-js"/>
+<!--公共的js-->
+<script th:src="@{/modules/js/common.js}"></script>
+<!--权限资源列表js-->
+<script th:src="@{/modules/js/role/role-list.js}"></script>
+<script th:inline="javascript">
+
+  function getOperationHtml(operationHtml, row){
+
+    if(
+            /*[[${#authorization.expression('hasAuthority("sys:role:edit")')}]]*/
+    ) {
+      operationHtml.push('<li><a href="'+contextPath+'role/form/'+row.id+'" class="dropdown-item btn btn-primary"><i class="fa fa-edit"></i>&nbsp;修改</a></li>')
+    }
+
+    if(
+            /*[[${#authorization.expression('hasAuthority("sys:role:delete")')}]]*/
+    ) {
+      operationHtml.push('<li><a onclick="$.delete(\''+contextPath + 'role/' + row.id +'\')" class="dropdown-item btn btn-primary"><i class="fa fa-trash"></i>&nbsp;删除</a></li>')
+    }
+
+
+  }
+
+
+  // 权限判断是否显示操作列
+  function showOperation() {
+    if(
+            /*[[
+            ${#authorization.expression('hasAuthority("sys:role:delete")')}
+            or ${#authorization.expression('hasAuthority("sys:role:edit")')}
+            ]]*/
+    ) {
+      $table.bootstrapTable('showColumn', 'action')
+    }
+  }
+
+
+</script>
 
 </body>
 </html>

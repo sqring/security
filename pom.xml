@@ -22,17 +22,31 @@
         <hutool.version>5.6.3</hutool.version>
         <fastjson.version>1.2.8</fastjson.version>
         <kaptcha.version>2.3.2</kaptcha.version>
-   </properties>
+        <mybatis-plus.version>3.4.2</mybatis-plus.version>
+        <druid.version>1.1.12</druid.version>
+    </properties>
 
     <dependencies>
+        <!--mybatis-plus启动器-->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>${mybatis-plus.version}</version>
+        </dependency>
+        <!--druid连接池-->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>${druid.version}</version>
+        </dependency>
         <!--采用redis来管理session-->
         <dependency>
-              <groupId>org.springframework.boot</groupId>
-              <artifactId>spring-boot-starter-data-redis</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
         <dependency>
-              <groupId>org.springframework.session</groupId>
-              <artifactId>spring-session-data-redis</artifactId>
+            <groupId>org.springframework.session</groupId>
+            <artifactId>spring-session-data-redis</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -82,10 +96,41 @@
         </dependency>
 
         <!--对Thymeleaf添加Spring Security标签支持-->
-        <!--<dependency>
+        <dependency>
             <groupId>org.thymeleaf.extras</groupId>
             <artifactId>thymeleaf-extras-springsecurity5</artifactId>
-        </dependency>-->
+        </dependency>
+        <!--bootstrap-table-->
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>bootstrap-table</artifactId>
+            <version>1.14.1</version>
+        </dependency>
+        <!--jquery-treeGrid-->
+        <dependency>
+            <groupId>org.webjars.bower</groupId>
+            <artifactId>jquery-treegrid</artifactId>
+            <version>0.3.0</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jquery</artifactId>
+                    <groupId>org.webjars.bower</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!--layer-->
+        <dependency>
+            <groupId>org.webjars.bowergithub.sentsin</groupId>
+            <artifactId>layer</artifactId>
+            <version>3.1.1</version>
+        </dependency>
+
+        <!-- application.yml 配置处理器-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

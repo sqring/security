@@ -45,14 +45,17 @@
           <h3 class="card-title">菜单列表</h3>
           <!-- 工具栏 -->
           <div class="card-tools">
-            <button type="button" class="btn btn-primary btn-xs" th:onclick="location.href=[[@{/permission/form}]]" data-toggle="tooltip" title="新增">
+            <button type="button" sec:authorize="hasAuthority('sys:permission:add')" class="btn btn-primary btn-xs" th:onclick="location.href=[[@{/permission/form}]]" data-toggle="tooltip" title="新增">
               <i class="fa fa-plus"></i>&nbsp;新增
             </button>
           </div>
           <!-- /工具栏 -->
         </div>
         <div class="card-body">
-          <table id="table" class="table table-bordered"></table>
+          <table id="table" class="table table-bordered">
+
+
+          </table>
         </div>
       </div>
       <!--/.box-body-->
@@ -77,6 +80,44 @@
 <th:block th:replace="fragments/script :: public-js"/>
 <th:block th:replace="fragments/script :: bootstrap-table-js"/>
 <th:block th:replace="fragments/script :: layer-js"/>
+<!--公共的js-->
+<script th:src="@{/modules/js/common.js}"></script>
+<!--权限资源列表js-->
+<script th:src="@{/modules/js/permission/permission-list.js}"></script>
+<script th:inline="javascript">
 
+  function getOperationHtml(operationHtml, row){
+
+    if(
+            /*[[${#authorization.expression('hasAuthority("sys:permission:edit")')}]]*/
+    ) {
+      operationHtml.push('<li><a href="'+contextPath+'permission/form/'+row.id+'" class="dropdown-item btn btn-primary"><i class="fa fa-edit"></i>&nbsp;修改</a></li>')
+    }
+
+    if(
+            /*[[${#authorization.expression('hasAuthority("sys:permission:delete")')}]]*/
+    ) {
+      operationHtml.push('<li><a onclick="$.delete(\''+contextPath + 'permission/' + row.id +'\')" class="dropdown-item btn btn-primary"><i class="fa fa-trash"></i>&nbsp;删除</a></li>')
+    }
+
+
+  }
+
+
+  // 权限判断是否显示操作列
+  function showOperation() {
+    if(
+            /*[[
+            ${#authorization.expression('hasAuthority("sys:permission:delete")')}
+            or ${#authorization.expression('hasAuthority("sys:permission:edit")')}
+            ]]*/
+    ) {
+      $table.bootstrapTable('showColumn', 'action')
+    }
+  }
+
+
+
+</script>
 </body>
 </html>

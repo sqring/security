@@ -55,7 +55,7 @@
 
         <div class="card-body">
           <!-- 搜索栏 -->
-          <form class="form-inline search  text-sm" id="search-form" th:action="@{/user/search}" method="post">
+          <form class="form-inline search  text-sm" id="search-form">
             <div class="form-group input-group-sm">
               <span>用户名：</span>
               <input id="username" name="username" type="text" class="form-control" autocomplete="off">
@@ -101,6 +101,38 @@
 <th:block th:replace="fragments/script :: public-js"/>
 <th:block th:replace="fragments/script :: bootstrap-table-js"/>
 <th:block th:replace="fragments/script :: layer-js"/>
+<!--公共的js-->
+<script th:src="@{/modules/js/common.js}"></script>
+<!--权限资源列表js-->
+<script th:src="@{/modules/js/user/user-list.js}"></script>
+<script th:inline="javascript">
 
+  function getOperationHtml(operationHtml, row){
+
+    if(
+            /*[[${#authorization.expression('hasAuthority("sys:user:edit")')}]]*/
+    ) {
+      operationHtml.push('<li><a href="'+contextPath+'user/form/'+row.id+'" class="dropdown-item btn btn-primary"><i class="fa fa-edit"></i>&nbsp;修改</a></li>')
+    }
+
+    if(
+            /*[[${#authorization.expression('hasAuthority("sys:user:delete")')}]]*/
+    ) {
+      operationHtml.push('<li><a onclick="$.delete(\''+contextPath + 'user/' + row.id +'\')" class="dropdown-item btn btn-primary"><i class="fa fa-trash"></i>&nbsp;删除</a></li>')
+    }
+  }
+
+  // 权限判断是否显示操作列
+  function showOperation() {
+    if(
+            /*[[
+            ${#authorization.expression('hasAuthority("sys:user:delete")')}
+            or ${#authorization.expression('hasAuthority("sys:user:edit")')}
+            ]]*/
+    ) {
+      $table.bootstrapTable('showColumn', 'action')
+    }
+  }
+</script>
 </body>
 </html>
