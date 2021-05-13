@@ -60,7 +60,7 @@ Spring Security是一个功能强大且高度可定制的身份验证和访问�
 
 #### 四、相关博客
 - [SpringSecurity身份认证方式](https://zhouwenfang.com/archives/security1)
-
+- [SpringSecurity鉴权流程](https://zhouwenfang.com/archives/springsecurity2)
 
 #### 五、个人博客站点
 
